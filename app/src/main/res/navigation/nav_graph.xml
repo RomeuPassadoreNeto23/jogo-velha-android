@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/jogoFragment"
         android:name="br.senai.sp.cotia.jogodavelhaapp.fragment.JogoFragment"
-        android:label="fragment_jogo"
+        android:label="@string/velha"
         tools:layout="@layout/fragment_jogo" >
         <action
             android:id="@+id/action_jogoFragment_to_inicioFragment"
@@ -30,6 +30,6 @@
     <fragment
         android:id="@+id/prefFragment"
         android:name="br.senai.sp.cotia.jogodavelhaapp.fragment.PrefFragment"
-        android:label="fragment_pref"
+        android:label="@string/preferences"
         tools:layout="@layout/fragment_pref" />
 </navigation>

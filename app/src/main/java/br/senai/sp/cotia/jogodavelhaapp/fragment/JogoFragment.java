@@ -3,10 +3,15 @@ package br.senai.sp.cotia.jogodavelhaapp.fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -17,6 +22,7 @@ import java.util.Random;
 
 import br.senai.sp.cotia.jogodavelhaapp.R;
 import br.senai.sp.cotia.jogodavelhaapp.databinding.FragmentJogoBinding;
+import br.senai.sp.cotia.jogodavelhaapp.util.PrefsUtil;
 
 
 public class JogoFragment extends Fragment {
@@ -30,10 +36,12 @@ public class JogoFragment extends Fragment {
     //variavel rendom para sortear quem começa
     private Random random;
     private  int numjogadadas = 0;
+    private  int placarjog1 = 0 , placarjog2 = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         // Inflate the layout for this fragment
        binding = FragmentJogoBinding.inflate(inflater,container, false);
       botoes =  new  Button[9];
@@ -57,8 +65,11 @@ public class JogoFragment extends Fragment {
         }
       //intansia
       random = new Random();
-      simbojoo1 = "x";
-      simbojoo2 = "0";
+      simbojoo1 = PrefsUtil.getSimbolojogo1(getContext());
+      simbojoo2 = PrefsUtil.getSimbolojogo2(getContext());
+
+      binding.tvJogador1.setText(getResources().getString(R.string.jogador1,simbojoo1));
+      binding.tvJogador2.setText(getResources().getString(R.string.jogador2,simbojoo2));
       sorteia();
 
 
@@ -104,6 +115,34 @@ public class JogoFragment extends Fragment {
 
 
     }
+    private  void  atualizarPlacar(){
+        binding.tvpalcarjog1.setText(placarjog1+"");
+        binding.tvpalcarjog2.setText(placarjog2+"");
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case  R.id.menu_resetar:
+                placarjog1 = 0;
+                placarjog2 = 0;
+                restar();
+                atualizarPlacar();
+                break;
+            case R.id.menu_preferences:
+                NavHostFragment.findNavController(JogoFragment.this).navigate(R.id.action_jogoFragment_to_prefFragment);
+                break;
+
+        }
+      return  true;
+    }
+
     private boolean venceu(){
         for (int i = 0;i < 3; i++) {
 
@@ -156,7 +195,16 @@ public class JogoFragment extends Fragment {
         button.setBackgroundColor(Color.WHITE);
         if(numjogadadas >= 5 && venceu()){
             Toast.makeText(getContext(),R.string.venceu, Toast.LENGTH_LONG).show();
+
+            if(simbolo.equals(simbojoo1)){
+                placarjog1++;
+            }else {
+                placarjog2++;
+
+            }
+            atualizarPlacar();
             restar();
+
         }else if (numjogadadas == 9){
             Toast.makeText(getContext(),R.string.deuvelha, Toast.LENGTH_LONG).show();
             restar();
